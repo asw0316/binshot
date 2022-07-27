@@ -14,6 +14,11 @@ pip install -r requirements.txt
 ### Advance preparation
 * Binary should have execution permission.
 * Binary name format should be "binname-IA-compiler-optlv" (e.g., find-amd64-gcc-O2)
+* run following commands
+```
+mkdir norm corpus models
+mkdir norm/findutils norm/cve norm/cve_strip
+```
 
 ### Run IDA
 ```
