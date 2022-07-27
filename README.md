@@ -54,12 +54,29 @@ python3 corpusgen.py -f corpus/cve.cve.corpus.txt -y binsimtask -p
 
 ### Pretraining
 ```
-python3 bert_mlm.py -cd corpus/pretrain.findutils.corpus.txt -vp corpus/pretrain.findutils.corpus.voca -op models/pretrain
+python3 bert_mlm.py \
+            -cd corpus/pretrain.findutils.corpus.txt \
+            -vp corpus/pretrain.findutils.corpus.voca \
+            -op models/pretrain
 ```
 
 ### Finetuning & evaluation
 ```
-python3 binshot.py -bm models/pretrain/model_bert/bert_ep19.model -vp corpus/pretrain.findutils.corpus.voca -op models/downstream -r findutils -tn corpus/binsim.findutils.train.corpus.txt -vd corpus/binsim.findutils.valid.corpus.txt -tt corpus/binsim.findutils.test.corpus.txt
-python3 binshot.py -bm models/downstream/model_sim/bert_ep19.model -fm models/downstream/model_sim/sim_ep19.model -vp corpus/pretrain.findutils.corpus.voca -op models/downstream -r cve -tt corpus/cve.cve.corpus.txt
+python3 binshot.py \
+            -bm models/pretrain/model_bert/bert_ep19.model \
+            -vp corpus/pretrain.findutils.corpus.voca \
+            -op models/downstream \
+            -r findutils \
+            -tn corpus/binsim.findutils.train.corpus.txt \
+            -vd corpus/binsim.findutils.valid.corpus.txt \
+            -tt corpus/binsim.findutils.test.corpus.txt
+
+python3 binshot.py \
+            -bm models/downstream/model_sim/bert_ep19.model \
+            -fm models/downstream/model_sim/sim_ep19.model \
+            -vp corpus/pretrain.findutils.corpus.voca \
+            -op models/downstream \
+            -r cve \
+            -tt corpus/cve.cve.corpus.txt
 ```
 
