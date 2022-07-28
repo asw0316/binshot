@@ -5,6 +5,7 @@ This is the official repository for BinShot, which is a practical binary code si
 ```
 pip install -r requirements.txt
 ```
+Besides, you need to install the followings: 
 * python3 (tested on 3.8)
 * IDA Pro (tested on 7.6)
 * pytorch (tested on 1.11)
