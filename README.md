@@ -11,6 +11,7 @@ Besides, you need to install the followings:
 * pytorch (tested on 1.11)
 * tensorflow (tested on 2.2.0)
 * tensorboard (tested on 2.2.2)
+* tensorboardX (tested on 2.2)
 
 ## Run codes with example binaries
 ### Advance preparation
@@ -25,15 +26,15 @@ mkdir norm/findutils norm/cve norm/cve_strip
 ### Run IDA
 ```
 bash gen_ida.sh binary/findutils/
-```
-* trouble shooting: If dmp.gz files are not generated, add the following code to line 9 in ida.py.
-```
-sys.path.insert(0, '/absolute/path/to/binshot/codes')
+bash gen_ida.sh binary/cve/
+bash gen_ida.sh binary/cve_strip/
 ```
 
 ### Normalize assembly
 ```
 bash gen_norm.sh binary/findutils/ norm/findutils/
+bash gen_norm.sh binary/cve/ norm/cve/
+bash gen_norm.sh binary/cve_strip/ norm/cve_strip/
 ```
 
 ### Pretraining corpus generation
@@ -50,8 +51,7 @@ python3 corpusgen.py -f corpus/binsim.findutils.corpus.txt -y binsimtask -p
 
 ### Generating copurs for realistic scenario
 ```
-python3 corpusgen.py -d binary/findutils/ -pkl norm/findutils/ -o corpus/ -c
-python3 corpusgen.py -f corpus/cve.cve.corpus.txt -y binsimtask -p
+python3 corpusgen.py -d binary/cve/ -pkl norm/cve/ -o corpus/ -c
 ```
 
 ### Pretraining
@@ -79,6 +79,6 @@ python3 binshot.py \
             -vp corpus/pretrain.findutils.corpus.voca \
             -op models/downstream \
             -r cve \
-            -tt corpus/cve.cve.corpus.txt
+            -tt corpus/cve.corpus.txt
 ```
 
