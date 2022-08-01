@@ -9,9 +9,6 @@ Besides, you need to install the followings:
 * python3 (tested on 3.8)
 * IDA Pro (tested on 7.6)
 * pytorch (tested on 1.11)
-* tensorflow (tested on 2.2.0)
-* tensorboard (tested on 2.2.2)
-* tensorboardX (tested on 2.2)
 
 ## Run codes with example binaries
 ### Advance preparation
@@ -29,6 +26,7 @@ bash gen_ida.sh binary/findutils/
 bash gen_ida.sh binary/cve/
 bash gen_ida.sh binary/cve_strip/
 ```
+If you don't have IDA, unzip binary.tar.gz and use it.
 
 ### Normalize assembly
 ```

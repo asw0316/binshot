@@ -10,9 +10,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, random_split
-from tensorboardX import SummaryWriter
-from tensorflow.python.util import deprecation
-deprecation._PRINT_DEPRECATION_WARNINGS = False
 
 import warnings
 from sklearn.exceptions import UndefinedMetricWarning
@@ -122,15 +119,6 @@ class SimilarityTrainer():
         # Writer
         self.log_freq = log_freq
 
-        # train
-        self.train_loss_writer = SummaryWriter(f'{self.path.runs_path}/train/train_loss')
-
-        # validation
-        self.valid_loss_writer = SummaryWriter(f'{self.path.runs_path}/valid/valid_loss')
-
-        # test
-        self.test_loss_writer = SummaryWriter(f'{self.path.runs_path}/test/test_loss')
-
         self.num_params()
 
     def set_test_data(self, tt):
@@ -141,7 +129,6 @@ class SimilarityTrainer():
             os.remove(fp)
 
     def train(self):
-        train_writer = (self.train_loss_writer)
         train_metric_fp = f'{self.path.train_metric_fp}'
         self.initialize_log(train_metric_fp)
 
@@ -197,20 +184,13 @@ class SimilarityTrainer():
 
                         data_iter.write(str(post_fix))
 
-                    # writer train loss
-                    if self.step % hp.save_train_loss == 0:
-                        self.train_loss_writer.add_scalar('train_loss', loss, self.step)
-
                 valid_loss = self.validation(epoch)
                 self.save_bert_model(epoch, f"{self.path.sim_path}/bert")
                 self.save_sim_model(epoch, f"{self.path.sim_path}/sim")
                 print(f"EP_{epoch}, train_avg_loss={avg_loss}, valid_avg_loss={valid_loss}")
 
-            train_writer.close()
-
         except BaseException:
             traceback.print_exc()
-            train_writer.close()
 
     def validation(self, epoch):
         self.model.eval()
@@ -261,10 +241,6 @@ class SimilarityTrainer():
 
                     data_iter.write(str(post_fix))
 
-                # writer valid loss
-                self.valid_loss_writer.add_scalar('valid_loss', loss, self.step)
-
-            self.valid_loss_writer.close()
             return avg_loss
 
     def test(self):
@@ -314,8 +290,6 @@ class SimilarityTrainer():
                 preds = np.concatenate((preds, preds_batch), axis=-1)
                 labels = np.concatenate((labels, labels_batch), axis=-1)
 
-                self.test_loss_writer.add_scalar('test_loss', loss, self.step)
-
             # print log
             result_acc = compute_prediction_metric(preds, labels, avg='binary')
             post_fix = "\tAcc: %.3f, Precision: %.3f, Recall: %.3f, F1: %.3f, AUC: %.3f" \
@@ -324,8 +298,6 @@ class SimilarityTrainer():
             print(post_fix)
             write_pred_results(test_pred_fp, preds, labels, lines, scores)
 
-            self.test_loss_writer.close()
-        
 
     def stream(self, message):
         sys.stdout.write(f"\r{message}")
@@ -371,8 +343,6 @@ class Paths():
         self.output_path = output_path
         self.bert_path = f'{output_path}/model_bert'
         self.sim_path = f'{output_path}/model_sim'
-        self.plt_train_attn_path = f'{output_path}/train_plt_attn'
-        self.plt_valid_attn_path = f'{output_path}/valid_plt_attn'
         self.bert_checkpoints_path = f'{output_path}/bert_checkpoints_path'
         self.runs_path = f'{output_path}/runs'
         self.train_metric_fp = f'{output_path}/metric.train.{result_path}'
@@ -384,8 +354,6 @@ class Paths():
         os.makedirs(self.output_path, exist_ok=True)
         os.makedirs(self.bert_path, exist_ok=True)
         os.makedirs(self.sim_path, exist_ok=True)
-        os.makedirs(self.plt_train_attn_path, exist_ok=True)
-        os.makedirs(self.plt_valid_attn_path, exist_ok=True)
         os.makedirs(self.bert_checkpoints_path, exist_ok=True)
         os.makedirs(self.runs_path, exist_ok=True)
 
@@ -463,7 +431,8 @@ class SimDataset(Dataset):
                 len_tokens_f1 = len(f1_corpus.split(','))
                 len_tokens_f2 = len(f2_corpus.split(','))
 
-                if (5 < len_tokens_f1) and (5 < len_tokens_f2):
+                if (5 < len_tokens_f1 < hp.enc_maxlen -5)\
+                        and (5 < len_tokens_f2 < hp.enc_maxlen - 5):
                     self.corpus.append((f1_corpus, f2_corpus, label, line))
 
             self.num_data = len(self.corpus)

@@ -22,7 +22,6 @@ matplotlib.use('Agg')
 from scipy.spatial.distance import cosine
 
 from torch.utils.data import Dataset, DataLoader, random_split
-from tensorboardX import SummaryWriter
 import torchvision.utils as vutils
 from torch.optim import Optimizer
 from torch.nn.utils import clip_grad_norm_
@@ -613,25 +612,10 @@ class BERTTrainer():
         # Using Negative Log Likelihood Loss function for predicting the masked_token
         self.criterion = nn.NLLLoss(ignore_index=0)
 
-        # Writer
         self.log_freq = log_freq
-
-        # train
-        self.train_loss_writer = SummaryWriter(f'{self.path.runs_path}/train/train_loss')
-        self.train_attn_layer_writer = SummaryWriter(f'{self.path.runs_path}/train/attn_layer')
-        self.train_model_param_writer = SummaryWriter(f'{self.path.runs_path}/train/model_param')
-
-        # validation
-        self.valid_loss_writer = SummaryWriter(f'{self.path.runs_path}/valid/valid_loss')
-        self.valid_attn_layer_writer = SummaryWriter(f'{self.path.runs_path}/valid/valid_attn_layer')
-
         self.num_params()
 
     def train(self):
-        train_writer = (self.train_loss_writer, self.train_attn_layer_writer,
-                        self.train_model_param_writer)
-        valid_writer = (self.valid_loss_writer, self.valid_attn_layer_writer)
-
         try:
             for epoch in range(hp.epochs):
                 # Setting a tqdm progress bar
@@ -670,40 +654,6 @@ class BERTTrainer():
                     if i % self.log_freq == 0:
                         data_iter.write(str(post_fix))
 
-                    # writer train loss
-                    if self.step % hp.save_train_loss == 0:
-                        self.train_loss_writer.add_scalar('train_loss', loss, self.step)
-
-                    # writer
-                    if self.step % hp.save_runs == 0 and data["mlm_input"].size(0) == hp.batch_size:
-                        # writer attns_layer
-                        '''
-                        for layer, prob in enumerate(attn_list):
-                            prob = prob[0]
-                            fig, axs = plt.subplots(1, 4, figsize=(20, 10))
-                            print("Layer", layer + 1)
-                            for h in range(hp.num_attn_heads):
-                                self.draw(prob[h].cpu().detach().numpy(),
-                                     [], [], ax=axs[h])
-                            plt.savefig(f"{self.path.plt_train_attn_path}/Epoch{epoch}_train_step{self.step}_layer{layer+1}")
-                            # plt.show()
-                        '''
-
-                        # tensorboardX write
-                        '''
-                        for i, prob in enumerate(attn_list):
-                            prob = prob[0]
-                            for j in range(hp.num_attn_heads):
-                                x = vutils.make_grid(prob[j] * 255)
-                                self.train_attn_layer_writer.add_image(
-                                    f'Epoch{epoch}_train_attn_layer{i}_head{j + 1}', x, self.step)
-                        '''
-
-                        # write model_param
-                        for name, param in self.model.named_parameters():
-                            self.train_model_param_writer.add_histogram(
-                                f"Epoch{epoch}_train_{name}", param.clone().cpu().data.numpy(), self.step)
-
                     # save model checkpoint
                     #if self.step % hp.save_checkpoint == 0:
                     #    self.bert.checkpoint(self.path.bert_checkpoints_path, self.step)
@@ -712,34 +662,20 @@ class BERTTrainer():
                     if self.step % hp.save_model == 0:
                         self.save_bert_model(epoch, f"{self.path.bert_path}/bert")
 
-                    # evaluate
-                    if self.step % hp.save_valid_loss == 0:
-                        self.valid_loss_writer.add_scalar('valid_loss', loss, self.step)
-
                 gc.collect()
                 torch.cuda.empty_cache()
                 # Evaluate the model after each epoch
-                valid_loss = self.evaluate(epoch, valid_writer)
+                valid_loss = self.evaluate(epoch)
 
                 # Save the model after each epoch
                 self.save_bert_model(epoch, f"{self.path.bert_path}/bert")
                 self.save_mlm_model(epoch, f"{self.path.mlm_path}/mlm")
                 print(f"EP_{epoch}, train_avg_loss={avg_loss}, valid_avg_loss={valid_loss}")
 
-            for writer in train_writer:
-                writer.close()
-            for writer in valid_writer:
-                writer.close()
-
         except BaseException:
             traceback.print_exc()
-            for writer in train_writer:
-                writer.close()
-            for writer in valid_writer:
-                writer.close()
 
-    def evaluate(self, epoch, valid_writer):
-        (self.valid_loss_writer, self.valid_attn_layer_writer) = valid_writer
+    def evaluate(self, epoch):
         self.model.eval()
 
         # Setting the tqdm progress bar
@@ -774,36 +710,6 @@ class BERTTrainer():
                 if i % self.log_freq == 0:
                     data_iter.write(str(post_fix))
 
-                # writer valid loss
-                self.valid_loss_writer.add_scalar('valid_loss', loss, self.step)
-
-                if self.step % hp.save_runs == 0:
-                    # writer attns_layer
-                    '''
-                    for layer, prob in enumerate(attn_list):
-                        prob = prob[0]
-                        fig, axs = plt.subplots(1, 4, figsize=(20, 10))
-                        print("Layer", layer + 1)
-                        for h in range(hp.num_attn_heads):
-                            self.draw(prob[h].cpu().detach().numpy(),
-                                      [], [], ax=axs[h])
-                        plt.savefig(
-                            f"{self.path.plt_train_attn_path}/Epoch{epoch}_valid_step{self.step}_layer{layer + 1}")
-                        # plt.show()
-                    '''
-
-                    # tensorboardX write
-                    '''
-                    for i, prob in enumerate(attn_list):
-                        prob = prob[0]
-                        for j in range(hp.num_attn_heads):
-                            x = vutils.make_grid(prob[j] * 255)
-                            self.train_attn_layer_writer.add_image(f'Epoch{epoch}_valid_attn_layer{i}_head{j + 1}',
-                                                                   x, self.step)
-                    '''
-                    pass
-
-            #print(f"Valid Over!")
             return avg_loss
 
     def stream(self, message):
@@ -853,8 +759,6 @@ class Paths():
         self.output_path = output_path
         self.bert_path = f'{output_path}/model_bert'
         self.mlm_path = f'{output_path}/model_mlm'
-        self.plt_train_attn_path = f'{output_path}/train_plt_attn'
-        self.plt_valid_attn_path = f'{output_path}/valid_plt_attn'
         self.bert_checkpoints_path = f'{output_path}/bert_checkpoints_path'
         self.runs_path = f'{output_path}/runs'
         self.create_paths()
@@ -863,8 +767,6 @@ class Paths():
         os.makedirs(self.output_path, exist_ok=True)
         os.makedirs(self.bert_path, exist_ok=True)
         os.makedirs(self.mlm_path, exist_ok=True)
-        os.makedirs(self.plt_train_attn_path, exist_ok=True)
-        os.makedirs(self.plt_valid_attn_path, exist_ok=True)
         os.makedirs(self.bert_checkpoints_path, exist_ok=True)
         os.makedirs(self.runs_path, exist_ok=True)
 
@@ -909,7 +811,7 @@ class BERTDataset(Dataset):
             for line in tqdm.tqdm(f, desc="[+] Loading Dataset", total=self.num_data):
                 corpus = (line.split('\t')[2]).replace(" ","_")
                 len_tokens = len(corpus.split(','))
-                if 5 < len_tokens:
+                if 5 < len_tokens < hp.enc_maxlen - 5:
                     self.corpus.append(corpus.replace(',', ' '))
 
             self.num_data = len(self.corpus)
