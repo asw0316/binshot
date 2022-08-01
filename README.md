@@ -26,7 +26,6 @@ bash gen_ida.sh binary/findutils/
 bash gen_ida.sh binary/cve/
 bash gen_ida.sh binary/cve_strip/
 ```
-If you don't have IDA, unzip binary.tar.gz and use it.
 
 ### Normalize assembly
 ```
