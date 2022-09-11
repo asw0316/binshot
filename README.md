@@ -16,37 +16,36 @@ Besides, you need to install the followings:
 * Binary name format should be "binname-IA-compiler-optlv" (e.g., find-amd64-gcc-O2)
 * run following commands
 ```
-mkdir norm corpus models
-mkdir norm/findutils norm/cve norm/cve_strip
+mkdir -p norm/findutils norm/cve norm/cve_strip
 ```
 
-### Run IDA
+### Running IDA Pro
 ```
 bash gen_ida.sh binary/findutils/
 bash gen_ida.sh binary/cve/
 bash gen_ida.sh binary/cve_strip/
 ```
 
-### Normalize assembly
+### Normalizing assembly codes
 ```
 bash gen_norm.sh binary/findutils/ norm/findutils/
 bash gen_norm.sh binary/cve/ norm/cve/
 bash gen_norm.sh binary/cve_strip/ norm/cve_strip/
 ```
 
-### Pretraining corpus generation
+### Corpus generation for pretraining
 ```
 python3 corpusgen.py -d binary/findutils/ -pkl norm/findutils/ -o corpus/ -t
 python3 voca.py corpus/pretrain.findutils.corpus.voca.txt
 ```
 
-### Finetuning corpus generation
+### Corpus generation for finetuning
 ```
 python3 corpusgen.py -d binary/findutils/ -pkl norm/findutils/ -o corpus/ -b
 python3 corpusgen.py -f corpus/binsim.findutils.corpus.txt -y binsimtask -p
 ```
 
-### Generating copurs for realistic scenario
+### Corpus generation for a realistic scenario
 ```
 python3 corpusgen.py -d binary/cve/ -pkl norm/cve/ -o corpus/ -c
 ```
@@ -59,7 +58,7 @@ python3 bert_mlm.py \
             -op models/pretrain
 ```
 
-### Finetuning & evaluation
+### Finetuning & Evaluation
 ```
 python3 binshot.py \
             -bm models/pretrain/model_bert/bert_ep19.model \
