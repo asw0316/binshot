@@ -97,7 +97,8 @@ class SimilarityTrainer():
         # Initialize a Similarity Model with a BERT model
         self.model = None
         if ft_model_path != "":
-            self.model = torch.load(ft_model_path).to(self.device)
+            self.model = torch.load(ft_model_path, map_location='cuda:0').to(self.device) \
+		if torch.cuda.device_count() == 1 else torch.load(ft_model_path).to(self.device)
         else:
             self.model = SimilarityModel(bert).to(self.device)
 
@@ -485,7 +486,8 @@ def run_model(bert_model_path, vocab_path, corpus_paths, output_path,
                                        collate_fn=lambda batch: collate_sim(batch), shuffle=True)
 
         print("[+] Loading a Pre-traind model")
-        pretrained = torch.load(bert_model_path)
+        pretrained = torch.load(bert_model_path, map_location='cuda:0') \
+		if torch.cuda.device_count() == 1 else torch.load(bert_model_path)
         pretrained.eval()
 
         print("[+] Creating a Similarity Trainer")
@@ -500,7 +502,8 @@ def run_model(bert_model_path, vocab_path, corpus_paths, output_path,
 
     else:
         print("[+] Loading a Pre-traind model")
-        pretrained = torch.load(bert_model_path)
+        pretrained = torch.load(bert_model_path, map_location='cuda:0') \
+		if torch.cuda.device_count() == 1 else torch.load(bert_model_path)
         pretrained.eval()
 
     test_dataset = SimDataset(corpus_paths['test'], wv)
