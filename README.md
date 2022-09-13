@@ -83,7 +83,7 @@ python3 binshot.py \
             -r cve \
             -tt corpus/cve.corpus.txt
 ```
-* In this evaluation, we need to compare the each functions in compiler-optimization level, not each pairs.
+* In this evaluation, the result needs to be obtained by comparing the each functions in compiler-optimization level, not each function pair.
 ```
 python result_cve.py -s models/downstream/pred.test.cve_all -v models/downstream -t 0.5 -f
 ```
