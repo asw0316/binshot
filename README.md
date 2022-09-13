@@ -17,7 +17,7 @@ Besides, you need to install the followings:
 ### Download published data
 The proprocessed data used in our paper can be found by following google drive link:   
 https://bit.ly/3DlkFJk   
-Download the data, and then move them into "corpus" directory
+Download the data, and then move them into "corpus" directory.
 
 
 ### Pretraining
@@ -69,7 +69,7 @@ python3 binshot.py \
             -tt corpus/binsim.[gnu,spec06,spec17,rwp].test.corpus.txt
 ```
 
-### Practiaclity Evaluation
+### Practicality Evaluation
 ```
 python3 binshot.py \
             -bm models/downstream/model_sim/bert_ep19.model \
@@ -130,7 +130,8 @@ python3 corpusgen.py -d binary/cve/ -pkl norm/cve/ -o corpus/ -c
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Citation
-If your research employs BinShot, please cite the following paper:   
+If your research employs BinShot, please cite the following paper:
+```
 @INPROCEEDINGS{binshot,   
   author = {Sunwoo Ahn and Seonggwan Ahn and Hyungjoon Koo and Yunheung Paek},   
   title = {Practical Binary Code Similarity Detection with BERT-based
@@ -141,4 +142,5 @@ If your research employs BinShot, please cite the following paper:
   year = {2022},   
   location = {Austin, Texas}   
 }
+```
 
