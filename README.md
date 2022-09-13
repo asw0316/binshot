@@ -1,5 +1,6 @@
 # BinShot
-This is the official repository for BinShot (ACSAC 22'), which is a practical binary code similarity detection tool with BERT-based transferable similarity learning.
+This is the official repository for BinShot (ACSAC 22'),
+which is a practical binary code similarity detection tool with BERT-based transferable similarity learning.
 
 ## Requirements
 ```
@@ -14,8 +15,8 @@ Besides, you need to install the followings:
 
 ## Run codes with published data
 ### Download published data
-The proprocessed data used in our paper can be found by following google drive link:
-https://bit.ly/3DlkFJk
+The proprocessed data used in our paper can be found by following google drive link:   
+https://bit.ly/3DlkFJk   
 Download the data, and then move them into "corpus" directory
 
 
@@ -129,15 +130,15 @@ python3 corpusgen.py -d binary/cve/ -pkl norm/cve/ -o corpus/ -c
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Citation
-If your research employs BinShot, please cite the following paper:
-@INPROCEEDINGS{binshot,
-  author = {Sunwoo Ahn and Seonggwan Ahn and Hyungjoon Koo and Yunheung Paek},
+If your research employs BinShot, please cite the following paper:   
+@INPROCEEDINGS{binshot,   
+  author = {Sunwoo Ahn and Seonggwan Ahn and Hyungjoon Koo and Yunheung Paek},   
   title = {Practical Binary Code Similarity Detection with BERT-based
-		   Transferable Similarity Learning}
+		   Transferable Similarity Learning}   
   booktitle = {Proceedings of the 38th Annual Computer Security
-               Applications Conference (ACSAC)},
-  month = {Dec.},
-  year = {2022},
-  location = {Austin, Texas}
+               Applications Conference (ACSAC)},   
+  month = {Dec.},   
+  year = {2022},   
+  location = {Austin, Texas}   
 }
 
