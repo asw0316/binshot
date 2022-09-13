@@ -89,7 +89,8 @@ class SimilarityTrainer():
 
         # Setup a cuda device for SimModel training
         has_cuda = torch.cuda.is_available()
-        self.device = torch.device("cuda:"+cuda if has_cuda else "cpu")
+        device_loc = "cuda:"+cuda if has_cuda else "cpu"
+        self.device = torch.device(device_loc)
 
         # This BERT model will be saved every epoch
         self.bert = bert
@@ -97,7 +98,7 @@ class SimilarityTrainer():
         # Initialize a Similarity Model with a BERT model
         self.model = None
         if ft_model_path != "":
-            self.model = torch.load(ft_model_path, map_location='cuda:0').to(self.device) \
+            self.model = torch.load(ft_model_path, map_location=device_loc).to(self.device) \
 		if torch.cuda.device_count() == 1 else torch.load(ft_model_path).to(self.device)
         else:
             self.model = SimilarityModel(bert).to(self.device)
@@ -470,6 +471,9 @@ def run_model(bert_model_path, vocab_path, corpus_paths, output_path,
     np.random.seed(seed)
     torch.manual_seed(seed)
 
+    has_cuda = torch.cuda.is_available()
+    device_loc = "cuda:"+cuda if has_cuda else "cpu"
+
     paths = Paths(output_path, result_path)
 
     wv = WordVocab.load_vocab(vocab_path)
@@ -486,7 +490,7 @@ def run_model(bert_model_path, vocab_path, corpus_paths, output_path,
                                        collate_fn=lambda batch: collate_sim(batch), shuffle=True)
 
         print("[+] Loading a Pre-traind model")
-        pretrained = torch.load(bert_model_path, map_location='cuda:0') \
+        pretrained = torch.load(bert_model_path, map_location=device_loc) \
 		if torch.cuda.device_count() == 1 else torch.load(bert_model_path)
         pretrained.eval()
 
@@ -502,7 +506,7 @@ def run_model(bert_model_path, vocab_path, corpus_paths, output_path,
 
     else:
         print("[+] Loading a Pre-traind model")
-        pretrained = torch.load(bert_model_path, map_location='cuda:0') \
+        pretrained = torch.load(bert_model_path, map_location=device_loc) \
 		if torch.cuda.device_count() == 1 else torch.load(bert_model_path)
         pretrained.eval()
 
