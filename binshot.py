@@ -1,3 +1,20 @@
+################################################################
+# Practical Binary Code Similarity Detection                   #
+#   with BERT-based Transferable Similarity Learning           #
+#   (In the 38th Annual Computer Security                      #
+#    Applications Conference (ACSAC)                           #
+#                                                              #
+#  Author: Sunwoo Ahn <swahn@sor.snu.ac.kr>                    #
+#          Dept. of Electrical and Computer Engineering        #
+#            @ Seoul National University                       #
+#          Hyungjoon Koo <kevin.koo@skku.edu>                  #
+#          Dept. of Computer Science and Engineering           #
+#            @ Sungkyunkwan University                         #
+#                                                              #
+#  This file can be distributed under the MIT License.         #
+#  See the LICENSE file for details.                           #
+################################################################
+
 import os, sys
 import statistics
 import argparse
@@ -433,9 +450,14 @@ class SimDataset(Dataset):
                 len_tokens_f1 = len(f1_corpus.split(','))
                 len_tokens_f2 = len(f2_corpus.split(','))
 
-                if (5 < len_tokens_f1 < hp.enc_maxlen -5)\
-                        and (5 < len_tokens_f2 < hp.enc_maxlen - 5):
-                    self.corpus.append((f1_corpus, f2_corpus, label, line))
+                if "cve" in corpus_path:
+                    if (5 < len_tokens_f1)\
+                            and (5 < len_tokens_f2):
+                        self.corpus.append((f1_corpus, f2_corpus, label, line))
+                else:
+                    if (5 < len_tokens_f1 < hp.enc_maxlen -5)\
+                            and (5 < len_tokens_f2 < hp.enc_maxlen - 5):
+                        self.corpus.append((f1_corpus, f2_corpus, label, line))
 
             self.num_data = len(self.corpus)
 

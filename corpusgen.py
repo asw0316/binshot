@@ -1,3 +1,20 @@
+################################################################
+# Practical Binary Code Similarity Detection                   #
+#   with BERT-based Transferable Similarity Learning           #
+#   (In the 38th Annual Computer Security                      #
+#    Applications Conference (ACSAC)                           #
+#                                                              #
+#  Author: Sunwoo Ahn <swahn@sor.snu.ac.kr>                    #
+#          Dept. of Electrical and Computer Engineering        #
+#            @ Seoul National University                       #
+#          Hyungjoon Koo <kevin.koo@skku.edu>                  #
+#          Dept. of Computer Science and Engineering           #
+#            @ Sungkyunkwan University                         #
+#                                                              #
+#  This file can be distributed under the MIT License.         #
+#  See the LICENSE file for details.                           #
+################################################################
+
 import os, sys, resource, copy
 import unit
 import util
@@ -640,8 +657,6 @@ if __name__ == '__main__':
         pkl_dir = args.pkl_dir+'/' if not args.binary_dir.endswith("/") else args.pkl_dir
         binsim_corpus_fp = corpus_dir + "/binsim." + os.path.basename(binary_dir) + ".corpus.txt"
         binsim_corpus_generator(binary_dir, binsim_corpus_fp, pkl_dir)
-        #binsim_corpus_generator('cve-only.csv', 'binsim.cve.corpus.txt')
-        #binsim_cve_corpus_generator('cve-only.csv', 'binsim.cve.corpus.txt')
 
     # Generating a corpus for realistic scenario
     # Compare all functions in query binaries with functions of interest (i.e., vulnerable functions)
@@ -654,21 +669,21 @@ if __name__ == '__main__':
 
 
 
-    # python corpusgen.py -f ./test/findutils_find-amd64-clang-O0 -j
+    # python corpusgen.py -f ./binary/findutils/findutils_find-amd64-clang-O0 -j
     elif args.json_dump and os.path.isfile(args.target_file):
         nn, _, _, _ = run_normalization(args.target_file,
                                         normalization_level=args.norm_level)
         json_fp = args.target_file + ".json"
         json_corpus = nn.json_dump(json_fp)
 
-    # python corpusgen.py -f ./test/findutils_find-amd64-clang-O0 -x -l 0 -n 3
+    # python corpusgen.py -f ./binary/findutils/findutils_find-amd64-clang-O0 -x -l 0 -n 3
     elif args.txt_dump and os.path.isfile(args.target_file):
         res_fp = args.target_file + ".info.txt"
         nn, _, _, _ = run_normalization(args.target_file,
                                         normalization_level=args.norm_level)
         nn.write_bin_info(res_fp, level=args.dmplevel, resolve_callee=True)
 
-    # python3 corpusgen.py -f ./data/binsim.testsuite-all.corpus.txt -y binsimtask -p
+    # python3 corpusgen.py -f ./corpus/binsim.findutils.corpus.txt -y binsimtask -p
     elif args.split and os.path.isfile(args.target_file):
         corpus_fp = args.target_file
         corpus_split(corpus_fp, type=args.data_type, ratio=(0.9, 0.05, 0.05))

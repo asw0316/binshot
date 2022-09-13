@@ -1,3 +1,20 @@
+################################################################
+# Practical Binary Code Similarity Detection                   #
+#   with BERT-based Transferable Similarity Learning           #
+#   (In the 38th Annual Computer Security                      #
+#    Applications Conference (ACSAC)                           #
+#                                                              #
+#  Author: Sunwoo Ahn <swahn@sor.snu.ac.kr>                    #
+#          Dept. of Electrical and Computer Engineering        #
+#            @ Seoul National University                       #
+#          Hyungjoon Koo <kevin.koo@skku.edu>                  #
+#          Dept. of Computer Science and Engineering           #
+#            @ Sungkyunkwan University                         #
+#                                                              #
+#  This file can be distributed under the MIT License.         #
+#  See the LICENSE file for details.                           #
+################################################################
+
 # BERT language model params
 embed_dim = 256
 num_hidden = 128
@@ -32,4 +49,3 @@ save_checkpoint = 10000
 save_runs = 500
 batch_size = 32
 train_dataset_ratio = 0.95
-graph_batch_size = 4
