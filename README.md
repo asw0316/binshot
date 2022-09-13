@@ -39,6 +39,10 @@ python3 binshot.py \
             -vd corpus/binsim.all.valid.corpus.txt \
             -tt corpus/binsim.all.test.corpus.txt
 ```
+* If you want to get the metrics per compiler-optimization level pair(i.e., clangO0 - gccO2),
+```
+python result.py -s models/downstream/pred.test.all_all -v models/downstream
+```
 
 ### Transferability Evaluation
 ```
@@ -78,6 +82,10 @@ python3 binshot.py \
             -op models/downstream \
             -r cve \
             -tt corpus/cve.corpus.txt
+```
+* In this evaluation, we need to compare the each functions in compiler-optimization level, not each pairs.
+```
+python result_cve.py -s models/downstream/pred.test.cve_all -v models/downstream -t 0.5 -f
 ```
 
 
