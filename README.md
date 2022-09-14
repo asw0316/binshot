@@ -39,7 +39,7 @@ python3 binshot.py \
             -vd corpus/binsim.all.valid.corpus.txt \
             -tt corpus/binsim.all.test.corpus.txt
 ```
-* If you want to get the metrics per compiler-optimization level pair(i.e., clangO0 - gccO2),
+To get metrics across different compilers and optimization levels (e.g., clangO0 & gccO2), run following command:
 ```
 python result.py -s models/downstream/pred.test.all_all -v models/downstream
 ```
@@ -83,9 +83,12 @@ python3 binshot.py \
             -r cve \
             -tt corpus/cve.corpus.txt
 ```
-* In this evaluation, the result needs to be obtained by comparing the each functions in compiler-optimization level, not each function pair.
+In this evaluation, if any of functions of interest is similar with a target,
+it should be predicted as positive.      
+To get metrics corresponding to our realistic scenario (see paper),
+run following command:
 ```
-python result_cve.py -s models/downstream/pred.test.cve_all -v models/downstream -t 0.5 -f
+python result_cve.py -s models/downstream/pred.test.cve_all -v models/downstream
 ```
 
 
@@ -96,7 +99,7 @@ The following codes will be run with sample binaries in our repo.
 ### Advance preparation
 * Binary should have execution permission.
 * Binary name format should be "binname-IA-compiler-optlv" (e.g., find-amd64-gcc-O2)
-* run following commands
+* Run following commands
 ```
 mkdir -p norm/findutils norm/cve norm/cve_strip
 ```

@@ -53,13 +53,10 @@ class CveInfo:
 
 
 class CveMetric(CveInfo):
-    def __init__(self, source_file, threshold, is_ctr, include_fp):
+    def __init__(self, source_file):
         super().__init__()
         self.cve_results = self.make_cve_results()
         self.source_file = source_file
-        self.threshold = threshold
-        self.is_ctr = is_ctr
-        self.include_fp = include_fp
 
     def parse(self):
         """Parsing BinShot result file and making dictionary for CVE detection results per program.
@@ -81,8 +78,7 @@ class CveMetric(CveInfo):
 
               
             sim_score = float(sim_score)
-            pred = 1 if sim_score >= self.threshold else 0
-            pred = 1 - pred if self.is_ctr else pred
+            pred = 1 if sim_score >= 0.5 else 0
             ## append 
             # 0: true negative (label pos, pred neg)
             # 1: true positive (label pos, pred pos)
@@ -136,17 +132,7 @@ class CveMetric(CveInfo):
             for comp_opt in new_dict[func]:
                 if 1 in new_dict[func][comp_opt]:
                     # if it detected true pair(true positive)
-                    if 2 in new_dict[func][comp_opt]:
-                        # if it also detected false pair(false positive)
-                        if self.include_fp:
-                            # don't care false positive
-                            pred, label = 1, 1
-                        else:
-                            # exclude because of false positive
-                            pred, label = 0, 1
-                    else:
-                        # if it detected only true pair(only true positive)
-                        pred, label = 1, 1
+                    pred, label = 1, 1
                 else:
                     # if it didn't detect true pair
                     if func not in self.vulnerable_funcs:
@@ -173,15 +159,7 @@ class CveMetric(CveInfo):
         for func in vul_dict:
             for comp_opt in vul_dict[func]:
                 if 1 in vul_dict[func][comp_opt]:
-                    if 2 in vul_dict[func][comp_opt]:
-                        # mix true positive & false positive
-                        if self.include_fp:
-                            detect_results[func][comp_opt] = True
-                        else:
-                            detect_results[func][comp_opt] = False
-                    else:
-                        # only true positive
-                        detect_results[func][comp_opt] = True
+                    detect_results[func][comp_opt] = True
                 else:
                     # no true positive
                     detect_results[func][comp_opt] = False
@@ -211,19 +189,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", "--source_file", required=True, type=str, help="result file")
     parser.add_argument("-v", "--save_dir", required=True, type=str, help="save directory")
-    parser.add_argument("-t", "--threshold", required=True, type=float, help="threshold")
-    parser.add_argument("-c", "--is-contrastive", action='store_true', help='if it is binshot-ctr')
-    parser.add_argument("-f", "--include-fp", action='store_true', help='if it include false positive as positive detection')
     
     args = parser.parse_args()
     source_file = args.source_file
     save_dir = args.save_dir
-    thr = args.threshold
-    is_ctr = args.is_contrastive
-    include_fp = args.include_fp
 
-
-    cve_metric = CveMetric(source_file, thr, is_ctr, include_fp)
+    cve_metric = CveMetric(source_file)
     cve_results = cve_metric.parse()
 
     fw = open(os.path.join(save_dir, 'cve_result.txt'), 'w')
