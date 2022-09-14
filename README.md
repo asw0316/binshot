@@ -16,7 +16,7 @@ Besides, you need to install the followings:
 ## Run codes with published data
 ### Download published data
 The proprocessed data used in our paper can be found by following google drive link:   
-https://bit.ly/3DlkFJk   
+https://bit.ly/3xov03n     
 Download the data, and then move them into "corpus" directory.
 
 
