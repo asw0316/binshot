@@ -36,6 +36,8 @@ def parse(source_file):
     result = {p1+'_'+p2: dict() for (p1, p2) in pair_list}
     result['total'] = dict()
     
+    split_pattern = '(?<=[\w()]):(?=[\w()])'
+
     for key in result:
         result[key]['labels'] = list()
         result[key]['preds'] = list()
@@ -48,11 +50,11 @@ def parse(source_file):
         true, pred = res.split('///')[0], res.split('///')[1]
         
         if int(true) == 0:
-            _, comp_opt_1, _, comp_opt_2 = re.split('(?<=\w):(?=\w)', file_info)
+            _, comp_opt_1, _, comp_opt_2 = re.split(split_pattern, file_info)
             comp_opts = [comp_opt_1, comp_opt_2]
 
         elif int(true) == 1:
-            bn_fn, *comp_opts = re.split('(?<=\w):(?=\w)', file_info)
+            bn_fn, *comp_opts = re.split(split_pattern, file_info)
             assert len(comp_opts) == 2
         
         result['total']['labels'].append(int(float(true)))
