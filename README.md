@@ -43,6 +43,7 @@ To get metrics across different compilers and optimization levels (e.g., clangO0
 ```
 python result.py -s models/downstream/pred.test.all_all -v models/downstream
 ```
+The result will be written in the json file placed in models/downstream (-v option).
 
 ### Transferability Evaluation
 ```
@@ -90,6 +91,7 @@ run following command:
 ```
 python result_cve.py -s models/downstream/pred.test.cve_all -v models/downstream
 ```
+The result will be written in the txt file placed in models/downstream (-v option).
 
 
 
