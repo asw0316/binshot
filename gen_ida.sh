@@ -17,6 +17,8 @@
 #  See the LICENSE file for details.                           #
 ################################################################
 
+dir=$1
+
 for file in "$dir/"*
   do
     if [[ -x $file ]]
